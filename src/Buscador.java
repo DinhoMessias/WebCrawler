@@ -29,7 +29,7 @@ public class Buscador extends Thread {
 
             for (Element e : els) {
                 String link = e.attr("href");
-                if (link.indexOf("#") != 0) {
+                if (link.indexOf("#") == -1 && link.indexOf("seguro") == -1 && link.indexOf("summary") == -1) {
                     addLink(link);
                     System.out.println("Link " + k + " : " + link);
                 }
