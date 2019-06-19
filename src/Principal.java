@@ -12,7 +12,7 @@ public class Principal {
 		while (!categorias.isEmpty()) {
 			for (int i = 0; i < 5; i++) {
 				if (i < categorias.size()) {
-					BuscadorProduto b2 = new BuscadorProduto(categorias.remove(i), idProdutos);
+					BuscadorProduto b2 = new BuscadorProduto(categorias.remove(i), idProdutos, produtosRelacionados);
 					b2.start();
 				}
 			}

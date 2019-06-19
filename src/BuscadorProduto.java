@@ -12,11 +12,6 @@ public class BuscadorProduto extends Thread {
     private ArrayList<String> idProdutos;
     private ArrayList<String> produtosRelacionados;
 
-    public BuscadorProduto(ArrayList<String> idProdutos) {
-        this.url = "https://carros.mercadolivre.com.br/acessorios/";
-        this.idProdutos = idProdutos;
-    }
-
     public BuscadorProduto(String url, ArrayList<String> idProdutos, ArrayList<String> produtosRelacionados) {
         this.url = url;
         this.idProdutos = idProdutos;
@@ -34,7 +29,6 @@ public class BuscadorProduto extends Thread {
             for (Element e : elsLink) {
                 String link = e.attr("href");
                 if (link.indexOf("MLB") != -1 && link.indexOf("click") == -1 && link.indexOf("#") == -1) {
-
                     //TODO local para fazer busca sobre os produtos relacionados
                     /*
                     Document docProd = Jsoup.connect(link).ignoreContentType(true).get();
@@ -61,6 +55,12 @@ public class BuscadorProduto extends Thread {
     public synchronized void addID(String id) {
         if (!this.idProdutos.contains(id)) {
             this.idProdutos.add(id);
+        }
+    }
+
+    public synchronized void addProdutoRelacionado(String produto) {
+        if (!this.produtosRelacionados.contains(produto)) {
+            this.produtosRelacionados.add(produto);
         }
     }
 
