@@ -10,13 +10,13 @@ public class BuscadorReviews extends Thread {
     String url;
     ArrayList<String> comentarios;
 
-    public BuscadorReviews(String url, ArrayList<String> comentarios) {
-        this.url = "https://produto.mercadolivre.com.br" + url;
+    public BuscadorReviews(ArrayList<String> comentarios) {
+        this.url = "https://produto.mercadolivre.com.br/noindex/catalog/reviews/MLB872157483?noIndex=true&itemId=MLB872157483&contextual=true&access=view_all";
         this.comentarios = comentarios;
     }
 
-    public BuscadorReviews(ArrayList<String> comentarios) {
-        this.url = "https://produto.mercadolivre.com.br/noindex/catalog/reviews/MLB958806379?noIndex=true&itemId=MLB958806379&contextual=true&access=view_all";
+    public BuscadorReviews(String url, ArrayList<String> comentarios) {
+        this.url = "https://produto.mercadolivre.com.br" + url;
         this.comentarios = comentarios;
     }
 
@@ -24,17 +24,18 @@ public class BuscadorReviews extends Thread {
     public void run() {
         try {
             Document doc = Jsoup.connect(this.url).ignoreContentType(true).get();
-            Elements els = doc.getElementsByClass("review-listing ");
-            int k = 0;
+            Elements els = doc.getElementsByClass("reviews-container");
             for (Element e : els) {
+                Elements el = doc.getElementsByClass("review-element");
+                Elements el2 = doc.getElementsByClass("review-listing");
+
                 int filtroTitulo = e.getElementsByTag("label").toString().indexOf(">");
                 int filtroTitulo2 = e.getElementsByTag("label").toString().indexOf("</");
                 int filtroTexto = e.getElementsByTag("p").toString().indexOf(">");
                 int filtroTexto2 = e.getElementsByTag("p").toString().indexOf("<s");
                 String comentario = e.getElementsByTag("p").toString().substring(filtroTexto + 1, filtroTexto2);
                 String titulo = e.getElementsByTag("label").toString().substring(filtroTitulo + 1, filtroTitulo2);
-                System.out.println("Titulo: "+titulo + "\nComentario:" + comentario + "\n");
-                k++;
+                System.out.println("Titulo: " + titulo + "\nComentario:" + comentario + "\n");
             }
             Thread.sleep(500);
         } catch (IOException |
