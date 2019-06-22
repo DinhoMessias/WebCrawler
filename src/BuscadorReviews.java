@@ -10,11 +10,6 @@ public class BuscadorReviews extends Thread {
     String url;
     ArrayList<String> comentarios;
 
-    public BuscadorReviews(ArrayList<String> comentarios) {
-        this.url = "https://produto.mercadolivre.com.br/noindex/catalog/reviews/MLB872157483?noIndex=true&itemId=MLB872157483&contextual=true&access=view_all";
-        this.comentarios = comentarios;
-    }
-
     public BuscadorReviews(String url, ArrayList<String> comentarios) {
         this.url = "https://produto.mercadolivre.com.br" + url;
         this.comentarios = comentarios;
@@ -24,11 +19,8 @@ public class BuscadorReviews extends Thread {
     public void run() {
         try {
             Document doc = Jsoup.connect(this.url).ignoreContentType(true).get();
-            Elements els = doc.getElementsByClass("reviews-container");
+            Elements els = doc.getElementsByClass("review-element");
             for (Element e : els) {
-                Elements el = doc.getElementsByClass("review-element");
-                Elements el2 = doc.getElementsByClass("review-listing");
-
                 int filtroTitulo = e.getElementsByTag("label").toString().indexOf(">");
                 int filtroTitulo2 = e.getElementsByTag("label").toString().indexOf("</");
                 int filtroTexto = e.getElementsByTag("p").toString().indexOf(">");

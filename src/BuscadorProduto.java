@@ -10,12 +10,12 @@ public class BuscadorProduto extends Thread {
 
     private String url;
     private ArrayList<String> idProdutos;
-    private ArrayList<String> produtosRelacionados;
+    private ArrayList<String> linkComentarios;
 
-    public BuscadorProduto(String url, ArrayList<String> idProdutos, ArrayList<String> produtosRelacionados) {
+    public BuscadorProduto(String url, ArrayList<String> idProdutos, ArrayList<String> linkComentarios) {
         this.url = url;
         this.idProdutos = idProdutos;
-        this.produtosRelacionados = produtosRelacionados;
+        this.linkComentarios = linkComentarios;
     }
 
     @Override
@@ -23,20 +23,8 @@ public class BuscadorProduto extends Thread {
         try {
             Document doc = Jsoup.connect(this.url).ignoreContentType(true).get();
             Elements elsID = doc.select("div[id]");
-            Elements elsLink = doc.select("a[href]");
+            Elements elsLink = doc.getElementsByClass("item__info-link item__js-link ");
             int k = 0;
-
-            for (Element e : elsLink) {
-                String link = e.attr("href");
-                if (link.indexOf("MLB") != -1 && link.indexOf("click") == -1 && link.indexOf("#") == -1) {
-                    //TODO local para fazer busca sobre os produtos relacionados
-                    /*
-                    Document docProd = Jsoup.connect(link).ignoreContentType(true).get();
-                    */
-                    System.out.println(link);
-                }
-            }
-
             for (Element e : elsID) {
                 String id = e.attr("id");
                 if (id.indexOf("MLB") == 0) {
@@ -45,11 +33,29 @@ public class BuscadorProduto extends Thread {
                     k++;
                 }
             }
+
+            for (Element e : elsLink) {
+                String link = e.attr("href");
+                if (link.indexOf("MLB") != -1 && link.indexOf("click") == -1 && link.indexOf("#") == -1) {
+                    linkComentarios(link);
+                }
+            }
+
             Thread.sleep(10);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
+    public void linkComentarios(String link) throws IOException {
+        Document doc = Jsoup.connect(link).ignoreContentType(true).get();
+        int filtro = doc.getElementById("reviewsCard").toString().indexOf("/noindex");
+        int filtro2 = doc.getElementById("reviewsCard").toString().indexOf("\" data-modal:dinamic=\"true\"");
+        if (filtro > 0 && filtro2 > filtro) {
+            String linkComentario = doc.getElementById("reviewsCard").toString().substring(filtro, filtro2);
+            System.out.println(linkComentario);
+            addLinkComentario(linkComentario);
+        }
     }
 
     public synchronized void addID(String id) {
@@ -58,10 +64,9 @@ public class BuscadorProduto extends Thread {
         }
     }
 
-    public synchronized void addProdutoRelacionado(String produto) {
-        if (!this.produtosRelacionados.contains(produto)) {
-            this.produtosRelacionados.add(produto);
+    public synchronized void addLinkComentario(String link) {
+        if (!this.linkComentarios.contains(link)) {
+            this.linkComentarios.add(link);
         }
     }
-
 }
