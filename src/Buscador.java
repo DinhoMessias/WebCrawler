@@ -15,11 +15,6 @@ public class Buscador extends Thread {
         this.links = links;
     }
 
-    public Buscador(ArrayList<String> links, String url) {
-        this.url = url;
-        this.links = links;
-    }
-
     @Override
     public void run() {
         try {
@@ -29,11 +24,17 @@ public class Buscador extends Thread {
 
             for (Element e : els) {
                 String link = e.attr("href");
-                if (link.indexOf("#") != 0) {
+
+                //Filtrando os links para salvar somente os links de categorias
+
+                if (link.indexOf("#") == -1 && link.indexOf("summary") == -1 && link.indexOf("mlb") == -1 && link.indexOf("contato") == -1
+                        && link.indexOf("developers") == -1 && link.indexOf("seguro") == -1 && link.indexOf("AIMED") == -1
+                        && link.indexOf("config") == -1 && link.indexOf("syi") == -1 && link.indexOf("registration") == -1
+                        && link.indexOf("http://www.mercadolivre.com.br") == -1) {
                     addLink(link);
                     System.out.println("Link " + k + " : " + link);
+                    k++;
                 }
-                k++;
             }
             Thread.sleep(500);
         } catch (IOException |
