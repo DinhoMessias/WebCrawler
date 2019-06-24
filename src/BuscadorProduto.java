@@ -23,24 +23,34 @@ public class BuscadorProduto extends Thread {
         try {
             Document doc = Jsoup.connect(this.url).ignoreContentType(true).get();
             Elements elsID = doc.select("div[id]");
-            Elements elsLink = doc.getElementsByClass("item__info-link item__js-link ");
-            int k = 0;
+
+
             for (Element e : elsID) {
+                String produto = e.getElementsByClass("main-title").text();
+                String precoReal = e.getElementsByClass("price__fraction").text();
+                String precoCentavos = e.getElementsByClass("price__decimals").text();
+                String url = e.getElementsByClass("item__info-link item__js-link ").attr("href");
+                Elements imagem = e.getElementsByClass("lazy-load");
+                String linkImagem = imagem.attr("src");
                 String id = e.attr("id");
+                String valorProduto;
+
+                if (!precoCentavos.isEmpty()) {
+                    valorProduto = precoReal.concat(",").concat(precoCentavos);
+                } else {
+                    valorProduto = precoReal;
+                }
+
+                if (produto.isEmpty()) {
+                    produto = e.getElementsByClass("item_subtitle").text();
+                }
+
                 if (id.indexOf("MLB") == 0) {
                     addID(id);
-                    System.out.println("ID " + k + " : " + id);
-                    k++;
+                    System.out.println("Produto: " + produto + "\nPreço: R$" + valorProduto + "\nID: "
+                            + id + "\nImagem: " + linkImagem + "\n" + "Link Produto: " + url + "\n");
                 }
             }
-
-            for (Element e : elsLink) {
-                String link = e.attr("href");
-                if (link.indexOf("MLB") != -1 && link.indexOf("click") == -1 && link.indexOf("#") == -1) {
-                    linkComentarios(link);
-                }
-            }
-
             Thread.sleep(10);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -53,7 +63,7 @@ public class BuscadorProduto extends Thread {
         int filtro2 = doc.getElementById("reviewsCard").toString().indexOf("\" data-modal:dinamic=\"true\"");
         if (filtro > 0 && filtro2 > filtro) {
             String linkComentario = doc.getElementById("reviewsCard").toString().substring(filtro, filtro2);
-            System.out.println(linkComentario);
+            //System.out.println(linkComentario);
             addLinkComentario(linkComentario);
         }
     }
