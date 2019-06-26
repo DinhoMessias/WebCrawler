@@ -35,6 +35,11 @@ public class BuscadorProduto extends Thread {
                 String id = e.attr("id");
                 String valorProduto;
 
+                if(url.isEmpty()){
+                    url = e.getElementsByClass("item__info-title").attr("href");
+
+                }
+
                 if (!precoCentavos.isEmpty()) {
                     valorProduto = precoReal.concat(",").concat(precoCentavos);
                 } else {
